@@ -1,101 +1,88 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from 'react'
+import { HMOVIES, MOVIES } from './const'
+import MovieCard from '@/components/MovieCard'
+
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzYyZTYxNDBmZjQ3NzA5YTRlNzE1NjAwOGNjNmFmNCIsIm5iZiI6MTczNTMwNzU3OC4wOTUsInN1YiI6IjY3NmViMTNhZjk0NTRlZWIxZDkyYTE3NSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ieTC0IlN2O1kFME3y2DzwP6-eJcYg2DVroPgVZSD0ug',
+  },
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [movie, setMovie] = useState(undefined)
+  const [hmovie, setHMovie] = useState(undefined)
+  const [streak, setStreak] = useState(0)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  async function fetchMovies() {
+    let index = Math.round(Math.random() * MOVIES.length)
+    console.log(index)
+    console.log(MOVIES[index])
+    let m = MOVIES[index].split(' ').join('%20')
+
+    fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
+      options
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setMovie(res.results[0])
+        console.log(res)
+      })
+      .catch((err) => console.error(err))
+
+    index = Math.round(Math.random() * HMOVIES.length)
+    m = HMOVIES[index].split(' ').join('%20')
+
+    fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
+      options
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        setHMovie(res.results[0])
+        console.log(res)
+      })
+      .catch((err) => console.error(err))
+  }
+
+  useEffect(() => {
+    fetchMovies()
+  }, [])
+
+  async function selectHandler(movie) {
+    console.log(movie.title)
+    if (movie.id === hmovie.id) {
+      console.log('tocno')
+      setStreak((p) => p + 1)
+      await fetchMovies()
+    } else {
+      setStreak(0)
+      await fetchMovies()
+    }
+  }
+
+  return (
+    <div className="h-full grid grid-cols-1 gap-6 items-center p-16 font-[family-name:var(--font-geist-sans)]">
+      <h1 className="text-center text-xl font-bold">
+        Guess which movie is from the Hallmark Channel
+      </h1>
+      <div
+        className={`flex gap-6 justify-center items-center h-full ${
+          Math.random() * 2 < 1
+            ? 'sm:flex-row flex-col-reverse	'
+            : 'sm:flex-row-reverse flex-col-reverse	'
+        }`}
+      >
+        {movie ? <MovieCard movie={movie} onClick={selectHandler} /> : null}
+
+        {hmovie ? <MovieCard movie={hmovie} onClick={selectHandler} /> : null}
+      </div>
+      <p className="text-center">Streak: {streak}</p>
     </div>
-  );
+  )
 }
