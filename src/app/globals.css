@@ -18,7 +18,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-  background-attachment: fixed;
+  /* background-attachment: fixed; */
 }
 
 .movie_name {
@@ -26,4 +26,12 @@ body {
   font-weight: 600;
   display: flex;
   flex-shrink: 1;
+}
+
+.snowflake {
+  width: 3px;
+  height: 3px;
+  border-radius: 20px;
+  background-color: white;
+  position: absolute;
 }

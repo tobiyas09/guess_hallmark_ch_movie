@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { HMOVIES, MOVIES } from './const'
 import MovieCard from '@/components/MovieCard'
 
@@ -16,6 +16,7 @@ const options = {
 export default function Home() {
   const [movie, setMovie] = useState(undefined)
   const [hmovie, setHMovie] = useState(undefined)
+  const [loading, setLoading] = useState(true)
   const [streak, setStreak] = useState(0)
 
   async function fetchMovies() {
@@ -24,34 +25,49 @@ export default function Home() {
     console.log(MOVIES[index])
     let m = MOVIES[index].split(' ').join('%20')
 
-    fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
-      options
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setMovie(res.results[0])
-        console.log(res)
-      })
-      .catch((err) => console.error(err))
+    try {
+      setLoading(true)
+      let res = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
+        options
+      )
 
-    index = Math.round(Math.random() * HMOVIES.length)
-    m = HMOVIES[index].split(' ').join('%20')
+      let data = await res.json()
+      setMovie(data.results[0])
 
-    fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
-      options
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        setHMovie(res.results[0])
-        console.log(res)
-      })
-      .catch((err) => console.error(err))
+      index = Math.round(Math.random() * HMOVIES.length)
+      m = HMOVIES[index].split(' ').join('%20')
+
+      res = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${m}&include_adult=false&language=en-US&page=1`,
+        options
+      )
+      data = await res.json()
+
+      setHMovie(data.results[0])
+    } catch (error) {
+      console.error(error)
+    }
+    setLoading(false)
   }
 
   useEffect(() => {
-    fetchMovies()
+    // fetchMovies()
+  }, [])
+  console.log(window.innerWidth, window.innerHeight)
+
+  const [wwidth, setwref] = useState(window.innerWidth)
+  const [hheight, sethref] = useState(window.innerHeight)
+
+  useEffect(() => {
+    const updateSize = () => {
+      setwref(window.innerWidth)
+      sethref(window.innerHeight)
+    }
+    window.addEventListener('resize', updateSize)
+    return () => {
+      window.removeEventListener('resize', updateSize)
+    }
   }, [])
 
   async function selectHandler(movie) {
@@ -74,15 +90,51 @@ export default function Home() {
       <div
         className={`flex gap-6 justify-center items-center h-full ${
           Math.random() * 2 < 1
-            ? 'sm:flex-row flex-col-reverse	'
-            : 'sm:flex-row-reverse flex-col-reverse	'
+            ? 'sm:flex-row flex-col-reversew'
+            : 'sm:flex-row-reverse flex-col-reverse'
         }`}
       >
-        {movie ? <MovieCard movie={movie} onClick={selectHandler} /> : null}
-
-        {hmovie ? <MovieCard movie={hmovie} onClick={selectHandler} /> : null}
+        {loading ? (
+          <div className="flex items-center" style={{ height: (200 * 16) / 9 }}>
+            Loading...
+          </div>
+        ) : (
+          <>
+            <MovieCard movie={movie} onClick={selectHandler} />
+            <MovieCard movie={hmovie} onClick={selectHandler} />
+          </>
+        )}
       </div>
       <p className="text-center">Streak: {streak}</p>
+
+      {Array(180)
+        .fill(1)
+        .map((v, i) => {
+          return (
+            <div
+              key={i}
+              className={`snowflake`}
+              style={{
+                zIndex: -1,
+                animation: `${
+                  Math.random() * 2 + 5
+                }s linear 1s infinite moveElement`,
+                top: 0,
+                right: i * Math.random() * 10,
+              }}
+            />
+          )
+        })}
+      <style jsx>{`
+        @keyframes moveElement {
+          from {
+            transform: translate(0, 0);
+          }
+          to {
+            transform: translate(${wwidth}px, ${hheight}px);
+          }
+        }
+      `}</style>
     </div>
   )
 }
