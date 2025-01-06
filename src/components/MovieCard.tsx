@@ -7,7 +7,7 @@ export default function MovieCard({ movie, onClick }) {
   return (
     <div
       onClick={() => onClick(movie)}
-      className="grid gap-4 border-solid rounded-2xl border-2 p-4 max-w-200 hover:bg-[#ff3a2f]"
+      className="flex flex-1 flex-col justify-between border-solid rounded-2xl border-2 p-4 max-w-200 h-full hover:bg-[#ff3a2f] cursor-pointer"
     >
       <Image
         src={'https://image.tmdb.org/t/p/original' + movie.poster_path}

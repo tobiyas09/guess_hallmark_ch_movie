@@ -19,6 +19,7 @@ export default function Home() {
   const [hmovie, setHMovie] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [streak, setStreak] = useState(0)
+  const [best, setBest] = useState(Number(localStorage.getItem('best')) || 0)
 
   async function fetchMovies() {
     let index = Math.round(Math.random() * MOVIES.length)
@@ -51,8 +52,14 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // fetchMovies()
+    fetchMovies()
   }, [])
+
+  useEffect(() => {
+    if (movie === undefined || hmovie === undefined) {
+      fetchMovies()
+    }
+  }, [hmovie, movie])
 
   async function selectHandler(movie) {
     if (movie.id === hmovie.id) {
@@ -60,6 +67,10 @@ export default function Home() {
       await fetchMovies()
     } else {
       setStreak(0)
+      if (streak > best) {
+        setBest(streak)
+        localStorage.setItem('best', streak.toString())
+      }
       await fetchMovies()
     }
   }
@@ -70,13 +81,13 @@ export default function Home() {
         Guess which movie is from the Hallmark Channel
       </h1>
       <div
-        className={`flex gap-6 justify-center items-center h-full ${
+        className={`flex gap-6 justify-center items-center  h-full ${
           Math.random() * 2 < 1
             ? 'sm:flex-row flex-col-reversew'
             : 'sm:flex-row-reverse flex-col-reverse'
         }`}
       >
-        {loading ? (
+        {loading || !movie || !hmovie ? (
           <div className="flex items-center" style={{ height: (200 * 16) / 9 }}>
             Loading...
           </div>
@@ -87,8 +98,14 @@ export default function Home() {
           </>
         )}
       </div>
-      <p className="text-center">Streak: {streak}</p>
-
+      <p className="text-center">
+        <p>
+          Streak: <b>{streak}</b>
+        </p>
+        <p>
+          Best: <b>{best}</b>
+        </p>
+      </p>
       {Array(400)
         .fill(1)
         .map((v, i) => {
