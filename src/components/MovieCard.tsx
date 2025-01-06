@@ -1,9 +1,15 @@
+import { MovieDetails } from '@/types/movies'
 import Image from 'next/image'
 
 const WIDTH = 200
 const HEIGHT = (WIDTH * 16) / 9
 
-export default function MovieCard({ movie, onClick }) {
+type MovieCardProps = {
+  movie: MovieDetails
+  onClick: (movie: MovieDetails) => void
+}
+
+export default function MovieCard({ movie, onClick }: MovieCardProps) {
   return (
     <div
       onClick={() => onClick(movie)}

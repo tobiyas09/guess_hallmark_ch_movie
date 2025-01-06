@@ -1,9 +1,10 @@
 import { useRef, useEffect } from 'react'
+const isBrowser = () => typeof window !== 'undefined'
 
 export default function Snowflake({ id }: { id: string }) {
   const windowSize = useRef<{ x: number; y: number }>({
-    x: window.innerWidth,
-    y: window.innerHeight,
+    x: isBrowser() ? window.innerWidth : 0,
+    y: isBrowser() ? window.innerHeight : 0,
   })
   const alfa = useRef(1)
   const speed = Math.random() * 1 + 1
@@ -40,6 +41,7 @@ export default function Snowflake({ id }: { id: string }) {
 
   useEffect(() => {
     animate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function animate() {

@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import { HMOVIES, MOVIES } from './const'
 import MovieCard from '@/components/MovieCard'
 import Snowflake from '@/components/Snowflake'
+import { MovieDetails } from '@/types/movies'
 
+const BEST_KEY = 'best'
 const options = {
   method: 'GET',
   headers: {
@@ -15,11 +17,11 @@ const options = {
 }
 
 export default function Home() {
-  const [movie, setMovie] = useState(undefined)
-  const [hmovie, setHMovie] = useState(undefined)
+  const [movie, setMovie] = useState<MovieDetails | undefined>(undefined)
+  const [hmovie, setHMovie] = useState<MovieDetails | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const [streak, setStreak] = useState(0)
-  const [best, setBest] = useState(Number(localStorage.getItem('best')) || 0)
+  const [best, setBest] = useState(0)
 
   async function fetchMovies() {
     let index = Math.round(Math.random() * MOVIES.length)
@@ -52,6 +54,11 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const bst = Number(localStorage.getItem(BEST_KEY) || 0)
+    setBest(bst)
+  }, [])
+
+  useEffect(() => {
     fetchMovies()
   }, [])
 
@@ -61,15 +68,15 @@ export default function Home() {
     }
   }, [hmovie, movie])
 
-  async function selectHandler(movie) {
-    if (movie.id === hmovie.id) {
+  async function selectHandler(movie: MovieDetails) {
+    if (movie.id === hmovie?.id) {
       setStreak((p) => p + 1)
       await fetchMovies()
     } else {
       setStreak(0)
       if (streak > best) {
         setBest(streak)
-        localStorage.setItem('best', streak.toString())
+        localStorage.setItem(BEST_KEY, streak.toString())
       }
       await fetchMovies()
     }
@@ -78,7 +85,7 @@ export default function Home() {
   return (
     <div className="h-full grid grid-cols-1 gap-6 items-center p-16 font-[family-name:var(--font-geist-sans)] overflow-hidden">
       <h1 className="text-center text-xl font-bold">
-        Guess which movie is from the Hallmark Channel
+        Which movie is from the Hallmark Channel?
       </h1>
       <div
         className={`flex gap-6 justify-center items-center  h-full ${
@@ -98,14 +105,14 @@ export default function Home() {
           </>
         )}
       </div>
-      <p className="text-center">
+      <div className="text-center">
         <p>
           Streak: <b>{streak}</b>
         </p>
         <p>
           Best: <b>{best}</b>
         </p>
-      </p>
+      </div>
       {Array(400)
         .fill(1)
         .map((v, i) => {
