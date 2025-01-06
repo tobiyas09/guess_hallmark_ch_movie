@@ -60,7 +60,7 @@ export default function Snowflake({ id }: { id: string }) {
 
   return (
     <div
-      className={`snowflake animatedBox`}
+      className={`snowflake`}
       style={{
         zIndex: -1,
         transform: `translate(var(--posX-${id}), var(--posY-${id}))`,

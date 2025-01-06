@@ -83,12 +83,17 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full grid grid-cols-1 gap-6 items-center p-16 font-[family-name:var(--font-geist-sans)] overflow-hidden">
+    <div
+      className="h-full grid grid-cols-1 gap-6 items-center p-16 font-[family-name:var(--font-geist-sans)] overflow-hidden relative"
+      style={{
+        contain: 'layout paint',
+      }}
+    >
       <h1 className="text-center text-xl font-bold">
         Which movie is from the Hallmark Channel?
       </h1>
       <div
-        className={`flex gap-6 justify-center items-center  h-full ${
+        className={`flex gap-6 justify-center items-center h-full ${
           Math.random() * 2 < 1
             ? 'sm:flex-row flex-col-reversew'
             : 'sm:flex-row-reverse flex-col-reverse'
@@ -113,7 +118,7 @@ export default function Home() {
           Best: <b>{best}</b>
         </p>
       </div>
-      {Array(400)
+      {Array(401)
         .fill(1)
         .map((v, i) => {
           return <Snowflake key={i} id={`snowflake-${i}`} />
