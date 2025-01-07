@@ -11,10 +11,11 @@ const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzYyZTYxNDBmZjQ3NzA5YTRlNzE1NjAwOGNjNmFmNCIsIm5iZiI6MTczNTMwNzU3OC4wOTUsInN1YiI6IjY3NmViMTNhZjk0NTRlZWIxZDkyYTE3NSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ieTC0IlN2O1kFME3y2DzwP6-eJcYg2DVroPgVZSD0ug',
+    Authorization: `Bearer ${process.env.TOKEN}`,
   },
 }
+
+let initalFetch = false
 
 export default function Home() {
   const [movie, setMovie] = useState<MovieDetails | undefined>(undefined)
@@ -26,6 +27,10 @@ export default function Home() {
   async function fetchMovies() {
     let index = Math.round(Math.random() * MOVIES.length)
     let m = MOVIES[index].split(' ').join('%20')
+
+    if (!initalFetch) {
+      initalFetch = true
+    }
 
     try {
       setLoading(true)
@@ -63,7 +68,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (movie === undefined || hmovie === undefined) {
+    if ((movie === undefined || hmovie === undefined) && initalFetch) {
       fetchMovies()
     }
   }, [hmovie, movie])
